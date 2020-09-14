@@ -1,0 +1,32 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+#include "simplex.hlsl"
+
+float cWidth;
+float cHeight;
+float3[]
+RWStructuredBuffer<float> voxels;
+
+[numthreads(32,1,32)]
+void CSMain (uint3 threadId : SV_GroupThreadID, uint3 groupId : SV_GroupID) {
+	// TODO: insert actual code here!
+
+	
+	uint3 threadIndex =  groupId * uint3(32, 1, 32) + threadId;
+   //TODO: implement any marching cubes / dual contouring functions in
+   //      here somewhere
+   uint3 endIndex = uint(32, 0, 32) + threadIndex;
+
+   float height = simplexNoise(float3(0, 0, 0));
+   int voxelPos = voxPos.x+ voxPos.y*size+voxPos.z*size*size;
+
+   // chunks are 32 * 32 blocks of columns the whole height of the volume
+   for(int y = threadIndex.y; y < endIndex.y; y++) {
+      if(y < height) {
+         voxels[voxelPos] = 1; // fill this voxel
+      } else {
+         voxels[voxelPos] = 0; // dont fill this voxel
+      }
+   }
+	//buffer1[id.x] = mul(id.x, cWidth);
+}
